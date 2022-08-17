@@ -26,7 +26,7 @@ contract LinkToken is IERC20 {
     string public constant symbol = "$";
     uint8 public  constant decimals = 18;
     uint256 public constant tokenAmount = 50;
-    uint public   totalSupply; 
+    uint public  override totalSupply; 
     address public owner;
 
 
@@ -41,31 +41,31 @@ contract LinkToken is IERC20 {
     }
 
 
-    function balanceOf(address _owner) public view returns (uint balance) {
+    function balanceOf(address _owner) public view override returns (uint balance) {
         return balances[_owner];
     }
 
-    function transfer(address _to, uint _value) public returns (bool success) {
+    function transfer(address _to, uint _value) public override returns (bool success) {
         balances[msg.sender] -= _value;
         balances[_to] += _value;
         emit Transfer(msg.sender, _to, _value);
         return true;
     }
 
-    function transferFrom(address _from, address _to, uint _value) public returns (bool success) {
+    function transferFrom(address _from, address _to, uint _value) public override returns (bool success) {
         balances[_from] -= _value;
         balances[_to] += _value;
         emit Transfer(_from, _to, _value);
         return true;
     }
 
-    function approve(address _spender, uint _value) public returns (bool success) {
+    function approve(address _spender, uint _value) public override returns (bool success) {
         allowed[msg.sender][_spender] = _value;
        emit  Approval(msg.sender, _spender, _value);
         return true;
     }
 
-    function allowance(address _owner, address _spender) public view returns (uint remaining) {
+    function allowance(address _owner, address _spender) public override view returns (uint remaining) {
         return allowed[_owner][_spender];
     }
 
@@ -80,7 +80,7 @@ contract Web3Token is IERC20 {
     string public constant name = "Web3Token";
     string public constant symbol = "WEB3";
     uint256 public constant tokenAmount = 300;
-    uint public   totalSupply; 
+    uint public override  totalSupply; 
     address public owner;
     mapping (address => uint) public balances;
     mapping (address => mapping (address => uint)) public allowed;
@@ -89,27 +89,27 @@ contract Web3Token is IERC20 {
         totalSupply = total;
         balances[msg.sender] = totalSupply;
     }
-    function balanceOf(address _owner) public view returns (uint balance) {
+    function balanceOf(address _owner) public override view returns (uint balance) {
         return balances[_owner];
     }
-    function transfer(address _to, uint _value) public returns (bool success) {
+    function transfer(address _to, uint _value) public override returns (bool success) {
         balances[msg.sender] -= _value;
         balances[_to] += _value;
         emit Transfer(msg.sender, _to, _value);
         return true;
     }
-    function transferFrom(address _from, address _to, uint _value) public returns (bool success) {
+    function transferFrom(address _from, address _to, uint _value) public override returns (bool success) {
         balances[_from] -= _value;
         balances[_to] += _value;
         emit Transfer(_from, _to, _value);
         return true;
     }
-    function approve(address _spender, uint _value) public returns (bool success) {
+    function approve(address _spender, uint _value) public override returns (bool success) {
         allowed[msg.sender][_spender] = _value;
        emit  Approval(msg.sender, _spender, _value);
         return true;
     }
-    function allowance(address _owner, address _spender) public view returns (uint remaining) {
+    function allowance(address _owner, address _spender) public override view returns (uint remaining) {
         return allowed[_owner][_spender];
     }
     function chekTotalSupply() public view returns (uint _totalSupply) {
@@ -170,9 +170,5 @@ contract SwapLinkTokenToWeb3Token {
         return web3Token.balanceOf(msg.sender);
     }
 }
-
-
-
-
 
 
