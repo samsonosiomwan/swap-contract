@@ -131,13 +131,16 @@ contract SwapLinkTokenToWeb3Token {
     }
     mapping (address => Order) public orders;
 
+    // 0xd9145CCE52D386f254917e481eB44e9943F39138 link
+    // 0xd8b934580fcE35a11B58C6D73aDeE468a2833fa8 web3token
+
     constructor(address _linkToken, address _web3Token)  {
         linkToken = LinkToken(_linkToken);
         web3Token = Web3Token(_web3Token);
     }
-    function swapLinkToken(uint _amount, address _tokenSender, address _tokenReceiver, uint _deadline) public {
+    function swapLinkToken(uint _amount, address _tokenSender,  uint _deadline) public {
+            address _tokenReceiver = web3Token.owner(); 
             orders[_tokenSender] = Order(_tokenSender, _tokenReceiver, _amount, block.timestamp + _deadline);
-            _tokenReceiver = web3Token.owner(); 
 
             //validate link token before transfer
              require(linkToken.balanceOf(_tokenReceiver) >= _amount, "Not enough tokens in the contract");
@@ -146,9 +149,10 @@ contract SwapLinkTokenToWeb3Token {
             linkToken.transfer(_tokenReceiver, linkToken.totalSupply());  //transfer tokens from link token to web3 token
     }
 
-    function swapWeb3Token(uint _amount, address _tokenSender, address _tokenReceiver, uint _deadline) public {
+    function swapWeb3Token(uint _amount, address _tokenSender, uint _deadline) public {
+             address _tokenReceiver = linkToken.owner();
+
             orders[_tokenSender] = Order(_tokenSender, _tokenReceiver, _amount, block.timestamp + _deadline);
-            _tokenReceiver = linkToken.owner();
 
             require(web3Token.balanceOf(_tokenReceiver) >= _amount, "Not enough tokens in the contract");
             require(web3Token.tokenAmount() >= _amount, "Not enough tokens in the contract");
@@ -170,5 +174,9 @@ contract SwapLinkTokenToWeb3Token {
         return web3Token.balanceOf(msg.sender);
     }
 }
+
+
+
+
 
 
