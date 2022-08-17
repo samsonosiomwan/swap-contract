@@ -127,13 +127,39 @@ contract SwapLinkTokenToWeb3Token {
         address tokenSender;
         address tokenReceiver;
         uint amount;
+        uint deadline;
     }
+    mapping (address => Order) public orders;
+
     constructor(address _linkToken, address _web3Token)  {
         linkToken = LinkToken(_linkToken);
         web3Token = Web3Token(_web3Token);
     }
-    function swap(uint _amount) public {
-            linkToken.transfer(web3Token.owner(), _amount);
+    function swapLinkToken(uint _amount, address _tokenSender, address _tokenReceiver, uint _deadline) public {
+            orders[_tokenSender] = Order(_tokenSender, _tokenReceiver, _amount, block.timestamp + _deadline);
+            _tokenReceiver = web3Token.owner(); 
+
+            //validate link token before transfer
+             require(linkToken.balanceOf(_tokenReceiver) >= _amount, "Not enough tokens in the contract");
+            require(linkToken.tokenAmount() >= _amount, "Not enough tokens in the contract");
+            require(_deadline > orders[_tokenSender].deadline, "Dealine exceeded");
+            linkToken.transfer(_tokenReceiver, linkToken.totalSupply());  //transfer tokens from link token to web3 token
+    }
+
+    function swapWeb3Token(uint _amount, address _tokenSender, address _tokenReceiver, uint _deadline) public {
+            orders[_tokenSender] = Order(_tokenSender, _tokenReceiver, _amount, block.timestamp + _deadline);
+            _tokenReceiver = linkToken.owner();
+
+            require(web3Token.balanceOf(_tokenReceiver) >= _amount, "Not enough tokens in the contract");
+            require(web3Token.tokenAmount() >= _amount, "Not enough tokens in the contract");
+            require(_deadline > orders[_tokenSender].deadline, "Dealine exceeded");
+             web3Token.transfer(_tokenReceiver, web3Token.totalSupply()); //transfer tokens from web3 token to link token
+           
+            
+    }
+
+    function approve(address _spender, uint _value) public {
+        linkToken.approve(_spender, _value);
     }
 
     function getLinkTokenBalance() public view returns (uint balance) {
